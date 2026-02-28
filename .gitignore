@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+.venv/
+env/
+build/
+dist/
+
+# ArcGIS / GIS
+*.lock
+*.aprx.bak
+*.gdb.zip
+.backups/
+
+# Databases & Data (Keeping the big stuff out of Git history)
+*.duckdb
+*.db
+*.sqlite
+*.csv
+*.json
+!**/.gitkeep
+
+# System junk
+.DS_Store
+Thumbs.db
