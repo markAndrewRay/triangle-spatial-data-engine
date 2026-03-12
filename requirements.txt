@@ -17,3 +17,4 @@ leafmap
 matplotlib
 seaborn
 pyarrow
+leafmap==0.35.0
