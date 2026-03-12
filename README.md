@@ -51,6 +51,10 @@ Provides data quality oversight.
 * **Metrics:** Generates row counts, null-value distributions, and distinct-value checks.
 * **Purpose:** Validates the silver layer to ensure data integrity before spatial modeling.
 
+### OSM Data Harvester (`shared/utils/osm_harvester.py`)
+A specialized module for programmatically fetching, filtering, and normalizing OpenStreetMap data.
+* **Functionality:** A specialized module for fetching, filtering, and normalizing OpenStreetMap data.
+
 ## ArcGIS Pro Integration
 This repository serves as the data engineering backend. 
 
