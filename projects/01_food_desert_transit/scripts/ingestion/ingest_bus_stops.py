@@ -5,7 +5,7 @@ import geopandas as gpd
 
 sys.path.append(os.getcwd())
 
-from shared.utils.io.harvester import harvest_arcgis_data
+from shared.utils.io.ingestor import harvest_arcgis_data
 
 def main():
     project_root = Path(__file__).resolve().parents[2]
