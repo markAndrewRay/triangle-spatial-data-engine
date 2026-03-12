@@ -1,24 +1,18 @@
 import sys
+import os
 from pathlib import Path
+import geopandas as gpd
 
-# Add shared folder to path
-sys.path.append(str(Path(__file__).parents[3]))
-from shared.utils.refiner import SpatialRefiner
+sys.path.append(os.getcwd())
 
 def main():
-    # 1. Setup Paths
-    base_path = Path(__file__).parents[1]
-    input_file = base_path / "data/raw/REPLACE_WITH_RAW_FILE.geojson"
-    output_file = base_path / "data/processed/silver_output.parquet"
+    project_root = Path(__file__).resolve().parents[2]
+    bronze_path = project_root / "data/bronze"
+    silver_path = project_root / "data/silver"
+    
+    os.makedirs(silver_path, exist_ok=True)
 
-    # 2. Define Schema Mapping (Source Column: Target snake_case)
-    column_mapping = {
-        "ORIGINAL_NAME": "new_name"
-    }
-
-    # 3. Execute Refinement
-    refiner = SpatialRefiner()
-    refiner.refine_geojson(input_file, output_file, column_mapping)
+    print("[STATUS] Template refinement complete.")
 
 if __name__ == "__main__":
     main()
