@@ -1,0 +1,15 @@
+project: "food_desert_transit"
+crs: "EPSG:2264"
+
+sources:
+  bus_stops:
+    url: "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/GoRaleigh_BusStops/FeatureServer/0/query?where=1=1&f=geojson"
+    format: "geojson"
+  grocery_stores:
+    url: "https://overpass-api.de/api/interpreter"
+    query: "[out:json];node['shop'='supermarket'](35.7,-78.8,35.9,-78.5);out geom;"
+    format: "osm"
+
+paths:
+  bronze_dir: "data/bronze"
+  silver_db: "data/silver/analysis.duckdb"

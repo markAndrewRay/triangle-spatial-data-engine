@@ -1,61 +1,54 @@
+import geopandas as gpd
+import yaml
 import requests
-import json
+from pathlib import Path
 import os
-from datetime import datetime
+import pandas as pd
 
-def harvest_arcgis_data(base_url, layer_id, save_path, filename):
-    """
-    Interfaces with ArcGIS REST APIs to programmatically extract full datasets.
-    """
-    
-    # Construct the query endpoint
-    query_url = f"{base_url}/{layer_id}/query"
-    
-    # Initialize parameters for the REST request
-    params = {
-        'where': '1=1',
-        'outFields': '*',
-        'f': 'geojson',
-        'resultOffset': 0,
-        'resultRecordCount': 2000 
-    }
-    
-    all_features = []
-    more_data = True
-    
-    while more_data:
-        response = requests.get(query_url, params=params)
-        response.raise_for_status() # Ensure the request was successful
-        data = response.json()
-        
-        features = data.get('features', [])
-        all_features.extend(features)
-        
-        # Handle pagination if the server limit is exceeded
-        if 'exceededTransferLimit' in data and data['exceededTransferLimit']:
-            params['resultOffset'] += params['resultRecordCount']
-        else:
-            more_data = False
+class Ingestor:
+    def __init__(self, config_path):
+        self.project_dir = os.path.dirname(config_path)
+        with open(config_path, 'r') as f:
+            self.config = yaml.safe_load(f)
             
-    # Define the standardized GeoJSON structure with lineage metadata
-    final_geojson = {
-        "type": "FeatureCollection",
-        "features": all_features,
-        "metadata": {
-            "harvest_date": datetime.now().isoformat(),
-            "source": query_url,
-            "record_count": len(all_features)
-        }
-    }
-    
-    # Standardized file naming convention for the Bronze layer
-    timestamp = datetime.now().strftime('%Y%m%d')
-    output_filename = f"raw_{filename}_{timestamp}.geojson"
-    full_save_path = os.path.join(save_path, output_filename)
-    
-    # Ensure directory exists and save payload
-    os.makedirs(save_path, exist_ok=True)
-    with open(full_save_path, 'w') as f:
-        json.dump(final_geojson, f)
+    def run(self):
+        bronze_dir = Path(self.project_dir) / self.config['paths']['bronze_dir']
+        bronze_dir.mkdir(parents=True, exist_ok=True)
         
-    return full_save_path
+        target_crs = self.config.get('crs', 'EPSG:2264') # Default to NC State Plane
+        
+        for name, info in self.config['sources'].items():
+            print(f" Processing {name}...")
+            
+            try:
+                if info.get('format') == 'osm':
+                    response = requests.get(info['url'], params={'data': info['query']})
+                    if response.status_code != 200:
+                        print(f" OSM Error: {response.status_code} - {response.text[:100]}")
+                        continue
+                    
+                    data = response.json()
+                    elements = []
+                    for el in data.get('elements', []):
+                        node = {'id': el.get('id'), 'lat': el.get('lat'), 'lon': el.get('lon')}
+                        if 'tags' in el:
+                            node.update(el['tags'])
+                        elements.append(node)
+                    
+                    df = pd.DataFrame(elements)
+                    gdf = gpd.GeoDataFrame(
+                        df, 
+                        geometry=gpd.points_from_xy(df.lon, df.lat),
+                        crs="EPSG:4326"
+                    )
+                else:
+                    gdf = gpd.read_file(info['url'])
+
+                # Normalize and Save
+                gdf = gdf.to_crs(target_crs)
+                output_path = bronze_dir / f"{name}.parquet"
+                gdf.to_parquet(output_path)
+                print(f" Saved {len(gdf)} records to {output_path}")
+
+            except Exception as e:
+                print(f" Failed to process {name}: {e}")
