@@ -1,63 +1,45 @@
 # Triangle Spatial Data Engine
+A modular, configuration-driven geospatial ETL pipeline designed for municipal data analysis in the Research Triangle.
 
-A spatial ETL pipeline for the Research Triangle region. This framework implements a medallion architecture (bronze, silver, gold) to transform municipal data into normalized assets for ArcGIS Pro.
-
-## Technical Stack
-* **Processing:** DuckDB, Polars, GeoPandas, Pyogrio
-* **Analysis & Profiling:** ydata-profiling, Scikit-learn, Scipy, Statsmodels
-* **Infrastructure:** ArcGIS Pro, Git LFS, Pydantic
-* **Standards:** WGS84 (EPSG:4326), snake_case schema enforcement
+## System Architecture
+This repository implements a metadata-driven ingestion model, separating core processing logic from project-specific data definitions. This architecture ensures scalability, reproducibility, and high-performance data handling.
 
 ## Repository Structure
-* **shared/utils/**: Reusable logic for data harvesting, normalization, and profiling.
-* **projects/**: Individual capsules containing project-specific scripts, notebooks, and data.
-* **data/**: Project-specific storage for raw, silver, and gold datasets.
+```text
+.
+├── projects/
+│   └── 01_food_desert_transit/    # Active Analysis Capsule
+│       ├── config.yml             # Data Source Definitions
+│       ├── main.py                # Pipeline Controller
+│       └── data/
+│           └── bronze/            # Standardized GeoParquet Files
+├── shared/
+│   └── utils/
+│       └── io/
+│           └── ingestor.py        # Core Modular Ingestion Engine
+└── requirements.txt               # Environment Dependencies
+```git log -1 --pretty=%B
 
-## Pipeline Workflow
+### Core Components
+* **Shared Utilities (shared/)**: A centralized ingestor engine that handles multi-format data acquisition (ArcGIS FeatureServer, OSM Overpass API, GeoJSON) and enforces standardized coordinate reference systems (CRS).
+* **Project Capsules (projects/)**: Self-contained analytical units. Each project contains its own config.yml (data sources and parameters) and main.py controller.
+* **Medallion Data Layering**: 
+    * **Bronze**: Raw, immutable snapshots stored as GeoParquet for high-performance I/O.
+    * **Silver**: Normalized and cleaned tables hosted in a local DuckDB instance.
+    * **Gold**: Analysis-ready features optimized for ArcGIS Pro and web visualization.
 
-### 1. Ingestion (Bronze)
-`python3 shared/utils/harvester.py`  
-Downloads raw GeoJSON or CSV files from municipal portals into the project `data/raw/` directory.
+## Getting Started
 
-### 2. Normalization (Silver)
-`python3 shared/utils/refiner.py`  
-Standardizes headers to snake_case, projects coordinates to EPSG:4326, and converts files to parquet format.
+### Prerequisites
+The environment is optimized for VS Code Dev Containers with the following core stack:
+* **Engine**: Python 3.12
+* **Spatial**: GeoPandas, Shapely, PyProj
+* **Storage**: DuckDB, Polars, Apache Parquet
 
-### 3. Validation (Profiler)
-`python3 shared/utils/profiler.py`  
-Runs health checks on silver assets to identify null values and schema anomalies before final filtering.
+### Running a Project Pipeline
+To execute the ingestion for a specific project capsule, run the following from the root directory:
 
-### 4. Logic & Filtering (Gold)
-`python3 projects/<project_name>/scripts/04_create_gold.py`  
-Applies project-specific filters and joins to create the final analysis-ready layer.
-
----
-
-## Shared Utilities
-
-### Harvester (`shared/utils/harvester.py`)
-Automates the acquisition of spatial datasets from municipal api endpoints.
-* **Functionality:** Handles http requests, manages response parsing for geojson/csv formats, and saves raw data to the project bronze layer.
-* **Goal:** Provides a consistent entry point for all external data dependencies.
-
-### Refiner (`shared/utils/refiner.py`)
-Handles data cleaning and standardization.
-* **Schema Enforcement:** Converts all field names to snake_case.
-* **Spatial Projection:** Ensures all data uses WGS84 for ArcGIS compatibility.
-* **Format Conversion:** Saves outputs as snappy-compressed parquet for performance.
-
-### Profiler (`shared/utils/profiler.py`)
-Provides data quality oversight.
-* **Metrics:** Generates row counts, null-value distributions, and distinct-value checks.
-* **Purpose:** Validates the silver layer to ensure data integrity before spatial modeling.
-
-### OSM Data Harvester (`shared/utils/osm_harvester.py`)
-A specialized module for programmatically fetching, filtering, and normalizing OpenStreetMap data.
-* **Functionality:** A specialized module for fetching, filtering, and normalizing OpenStreetMap data.
-
-## ArcGIS Pro Integration
-This repository serves as the data engineering backend. 
-
-Note on Data Format: All gold assets are saved as snappy-compressed parquet files to minimize storage footprint and optimize I/O. When bringing these into ArcGIS Pro, use the xy table to point tool to map the coordinates.
-
-Validated gold assets are the primary inputs for spatial modeling and analysis in ArcGIS Pro.
+```bash
+export PYTHONPATH=$PYTHONPATH:.
+python3 projects/01_food_desert_transit/main.py
+```
