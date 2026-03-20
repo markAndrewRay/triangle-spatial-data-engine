@@ -18,9 +18,9 @@ This repository implements a metadata-driven ingestion model, separating core pr
 │       └── io/
 │           └── ingestor.py        # Core Modular Ingestion Engine
 └── requirements.txt               # Environment Dependencies
-```git log -1 --pretty=%B
+```
 
-### Core Components
+## Core Components
 * **Shared Utilities (shared/)**: A centralized ingestor engine that handles multi-format data acquisition (ArcGIS FeatureServer, OSM Overpass API, GeoJSON) and enforces standardized coordinate reference systems (CRS).
 * **Project Capsules (projects/)**: Self-contained analytical units. Each project contains its own config.yml (data sources and parameters) and main.py controller.
 * **Medallion Data Layering**: 
