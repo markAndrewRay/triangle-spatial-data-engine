@@ -14,32 +14,43 @@ This repository implements a metadata-driven ingestion model, separating core pr
 │       └── data/
 │           └── bronze/            # Standardized GeoParquet Files
 ├── shared/
-│   └── utils/
+│   └── utils/                     # Global Utilities Folder
 │       └── io/
 │           └── ingestor.py        # Core Modular Ingestion Engine
 └── requirements.txt               # Environment Dependencies
 ```
 
 ## Core Components
-* **Shared Utilities (shared/)**: A centralized ingestor engine that handles multi-format data acquisition (ArcGIS FeatureServer, OSM Overpass API, GeoJSON) and enforces standardized coordinate reference systems (CRS).
-* **Project Capsules (projects/)**: Self-contained analytical units. Each project contains its own config.yml (data sources and parameters) and main.py controller.
-* **Medallion Data Layering**: 
-    * **Bronze**: Raw, immutable snapshots stored as GeoParquet for high-performance I/O.
-    * **Silver**: Normalized and cleaned tables hosted in a local DuckDB instance.
-    * **Gold**: Analysis-ready features optimized for ArcGIS Pro and web visualization.
+* **Shared Utilities (shared/)**: Reusable utilities for high-precision acquisition and relational database management.
+* **Project Capsules (projects/)**: Self-contained "Senior" way capsules with their own data, scripts, and notebooks.
+* **Industry Standards**: Enforces standardized data normalization and strict ethical data guidelines.
 
 ## Getting Started
 
 ### Prerequisites
-The environment is optimized for VS Code Dev Containers with the following core stack:
-* **Engine**: Python 3.12
-* **Spatial**: GeoPandas, Shapely, PyProj
-* **Storage**: DuckDB, Polars, Apache Parquet
+This engine requires **Python 3.12+**. All core logic is tested against **DuckDB v1.5.0** and the **DuckDB Spatial Extension**.
 
-### Running a Project Pipeline
-To execute the ingestion for a specific project capsule, run the following from the root directory:
+### Environment Setup 
+To ensure high-precision spatial operations and dependency isolation, this project uses a local virtual environment.
 
 ```bash
-export PYTHONPATH=$PYTHONPATH:.
-python3 projects/01_food_desert_transit/main.py
+python -m venv .venv
+
+source .venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+### Verify the Engine
+Run the following to ensure the 1.5.0 Spatial Engine and CRS (Coordinate Reference System) logic are operational:
+```bash
+python -c "import duckdb; con=duckdb.connect(':memory:'); con.execute('INSTALL spatial; LOAD spatial;'); res=con.execute(\"SELECT ST_AsText(ST_SetCRS(ST_GeomFromText('POINT(0 0)'), 'EPSG:4326'))\").fetchall(); print(f'🚀 Engine Status: {res}')"
+```
+
+### 3. Execution
+To execute a specific project capsule, run the following from the root directory:
+
+```bash
+export PYTHONPATH=\\\$PYTHONPATH:.
+python projects/01_food_desert_transit/main.py
 ```
