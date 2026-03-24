@@ -1,9 +1,10 @@
 import geopandas as gpd
-import yaml
+import pandas as pd
 import requests
+import yaml
 from pathlib import Path
 import os
-import pandas as pd
+from shapely.geometry import Point
 
 class Ingestor:
     def __init__(self, config_path):
@@ -15,40 +16,29 @@ class Ingestor:
         bronze_dir = Path(self.project_dir) / self.config['paths']['bronze_dir']
         bronze_dir.mkdir(parents=True, exist_ok=True)
         
-        target_crs = self.config.get('crs', 'EPSG:2264') # Default to NC State Plane
-        
         for name, info in self.config['sources'].items():
-            print(f" Processing {name}...")
-            
             try:
                 if info.get('format') == 'osm':
                     response = requests.get(info['url'], params={'data': info['query']})
-                    if response.status_code != 200:
-                        print(f" OSM Error: {response.status_code} - {response.text[:100]}")
-                        continue
+                    response.raise_for_status()
                     
                     data = response.json()
                     elements = []
                     for el in data.get('elements', []):
-                        node = {'id': el.get('id'), 'lat': el.get('lat'), 'lon': el.get('lon')}
+                        node = el.copy() 
                         if 'tags' in el:
                             node.update(el['tags'])
+                        
+                        node['geometry'] = Point(el.get('lon'), el.get('lat'))
                         elements.append(node)
                     
-                    df = pd.DataFrame(elements)
-                    gdf = gpd.GeoDataFrame(
-                        df, 
-                        geometry=gpd.points_from_xy(df.lon, df.lat),
-                        crs="EPSG:4326"
-                    )
+                    gdf = gpd.GeoDataFrame(elements, crs="EPSG:4326")
                 else:
                     gdf = gpd.read_file(info['url'])
 
-                # Normalize and Save
-                gdf = gdf.to_crs(target_crs)
                 output_path = bronze_dir / f"{name}.parquet"
-                gdf.to_parquet(output_path)
-                print(f" Saved {len(gdf)} records to {output_path}")
+                gdf.to_parquet(output_path, index=False)
+                print(f"Processed Raw Bronze: {name}")
 
             except Exception as e:
-                print(f" Failed to process {name}: {e}")
+                print(f"Error ingesting {name}: {e}")

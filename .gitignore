@@ -1,10 +1,14 @@
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
+
+# Environments
 .env
-.venv
+.venv/
 env/
 venv/
+
+# OS and Local
 .DS_Store
 sandbox/
-.venv/

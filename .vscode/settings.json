@@ -1,7 +1,6 @@
 {
-    "workbench.editorAssociations": {
-        "*.parquet": "duckdb.dataFileViewer",
-        "*.csv": "duckdb.dataFileViewer",
-        "*.tsv": "duckdb.dataFileViewer"
-    }
+    "python.defaultInterpreterPath": "/usr/local/bin/python",
+    "python.selectInterpreter": "/usr/local/bin/python",
+    "python.analysis.extraPaths": ["./shared"],
+    "jupyter.askForKernelRestart": false
 }
