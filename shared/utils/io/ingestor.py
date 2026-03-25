@@ -8,7 +8,7 @@ from shapely.geometry import Point
 
 class Ingestor:
     def __init__(self, config_path):
-        self.project_dir = os.path.dirname(config_path)
+        self.project_dir = os.path.dirname(os.path.abspath(config_path))
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
             
@@ -19,7 +19,14 @@ class Ingestor:
         for name, info in self.config['sources'].items():
             try:
                 if info.get('format') == 'osm':
-                    response = requests.get(info['url'], params={'data': info['query']})
+                    headers = {'User-Agent': 'TriangleSpatialDataEngine/1.0'}
+                    
+                    response = requests.get(
+                        info['url'], 
+                        params={'data': info['query']},
+                        headers=headers,
+                        timeout=60
+                    )
                     response.raise_for_status()
                     
                     data = response.json()
@@ -38,7 +45,7 @@ class Ingestor:
 
                 output_path = bronze_dir / f"{name}.parquet"
                 gdf.to_parquet(output_path, index=False)
-                print(f"Processed Raw Bronze: {name}")
+                print(f"Processed Raw Bronze (GeoParquet): {name}")
 
             except Exception as e:
                 print(f"Error ingesting {name}: {e}")
