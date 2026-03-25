@@ -1,8 +1,8 @@
 # Triangle Spatial Data Engine
-A modular, configuration-driven geospatial ETL pipeline designed for municipal data analysis in the Research Triangle.
+A modular, Virtual Spatial Lakehouse designed for municipal data analysis in the Research Triangle.
 
 ## System Architecture
-This repository implements a **Virtualized Spatial Warehouse** model. Instead of traditional database ingestion, the engine uses **DuckDB Views** to point directly to standardized **GeoParquet** files. This ensures zero data redundancy, 100% portability, and native compatibility with external GIS tools like ArcGIS Pro.
+This repository implements a **Virtualized Spatial Lakehouse** model. Instead of traditional database ingestion, the engine uses **DuckDB Views** to point directly to standardized **GeoParquet** files. This ensures zero data redundancy, 100% portability, and native compatibility with external GIS tools like ArcGIS Pro.
 
 ## Repository Structure
 ```text
