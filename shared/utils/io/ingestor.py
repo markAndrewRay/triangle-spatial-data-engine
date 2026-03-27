@@ -41,7 +41,7 @@ class Ingestor:
                     
                     gdf = gpd.GeoDataFrame(elements, crs="EPSG:4326")
                 else:
-                    gdf = gpd.read_file(info['url'])
+                    gdf = gpd.read_file(info['url'], engine="pyogrio", use_arrow=True)
 
                 output_path = bronze_dir / f"{name}.parquet"
                 gdf.to_parquet(output_path, index=False)

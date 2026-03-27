@@ -3,7 +3,8 @@ crs: "EPSG:2264"
 
 sources:
   bus_stops:
-    url: "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/GoRaleigh_BusStops/FeatureServer/0/query?where=1=1&f=geojson"
+    # Added &outFields=* to ensure all attributes are returned
+    url: "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/GoRaleigh_BusStops/FeatureServer/0/query?where=1=1&f=geojson&outFields=*"
     format: "geojson"
   grocery_stores:
     url: "https://overpass-api.de/api/interpreter"
