@@ -8,11 +8,11 @@ This repository implements a **Virtualized Spatial Lakehouse** model. Instead of
 ```text
 .
 ├── projects/
-│   └── 01_food_desert_transit/    # Active Analysis Capsule
-│       ├── config.yml             # Data Source Definitions
-│       ├── main.py                # Pipeline Controller
-│       └── data/
-│           └── bronze/            # Standardized GeoParquet Files
+│   └── 01_food_desert_transit/
+│       ├── data/
+│           ├── bronze/    # Raw ingestion 
+│           ├── silver/    # Hardened GeoParquet 
+│           └── gold/      # GeoPackage 
 ├── shared/
 │   └── utils/                     # Global Utilities Folder
 │       └── io/
