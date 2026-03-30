@@ -17,3 +17,4 @@ leafmap
 matplotlib
 seaborn
 ipykernel==7.2.0
+pyarrow
