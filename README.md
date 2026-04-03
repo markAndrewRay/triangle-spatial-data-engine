@@ -1,4 +1,4 @@
-# Triangle Spatial Data Engine
+# Triangle Spatial Decision Engine
 A modular, Virtual Spatial Lakehouse designed for municipal data analysis in the Research Triangle.
 
 ## System Architecture
@@ -7,23 +7,30 @@ This repository implements a **Virtualized Spatial Lakehouse** model. Instead of
 ## Repository Structure
 ```text
 .
-├── projects/
+├── projects/                      # Self-contained analytical capsules
 │   └── 01_food_desert_transit/
 │       ├── data/
-│           ├── bronze/    # Raw ingestion 
-│           ├── silver/    # Hardened GeoParquet 
-│           └── gold/      # GeoPackage 
-├── shared/
-│   └── utils/                     # Global Utilities Folder
+│       │   ├── bronze/            # Project-specific raw ingestion 
+│       │   ├── silver/            # Hardened GeoParquet 
+│       │   └── gold/              # Final Decision Layers (GeoPackage/CSV)
+│       ├── notebooks/             # Experimental Analysis
+│       └── scripts/               # Production-grade SQL and Python
+├── shared/                        # Global Reference Library & Utilities
+│   ├── data/
+│   │   ├── bronze/                # Global raw reference data (e.g., Zoning)
+│   │   ├── silver/                # Refined global reference data
+│   │   └── triangle_engine.db     # Centralized DuckDB Warehouse
+│   └── utils/                     
+│       ├── db/                    # Database initialization & maintenance
 │       └── io/
 │           └── ingestor.py        # Core Modular Ingestion Engine
 └── requirements.txt               # Environment Dependencies
 ```
 
 ## Core Components
-* **Virtual Data Warehouse**: Uses DuckDB Views to query external Parquet files, keeping the `.db` file under 100KB while processing millions of rows.
-* **Shared Utilities (shared/)**: Reusable utilities for high-precision acquisition and relational database management.
-* **Project Capsules (projects/)**: Self-contained capsules with localized data, scripts, and notebooks for modular scaling.
+* **Virtual Data Warehouse**: Uses DuckDB Views to query external Parquet files, keeping the `.db` file lightweight while processing millions of rows.
+* **Shared Reference Library (shared/data/)**: Centralized repository for universal municipal layers used across multiple project capsules.
+* **Project Capsules (projects/)**: Self-contained "Capsule Corp" style units with localized data, scripts, and notebooks for modular scaling.
 * **Industry Standards**: Enforces standardized data normalization, EPSG projection logic, and strict ethical data guidelines.
 
 ## Getting Started
@@ -47,7 +54,7 @@ python -c "import duckdb; con=duckdb.connect(':memory:'); con.execute('INSTALL s
 ```
 
 ### Execution
-To execute a specific project capsule and refresh the Bronze GeoParquet files, run the following from the root directory:
+To execute a specific project capsule and refresh the data pipeline, run the following from the root directory:
 
 ```bash
 export PYTHONPATH=\$PYTHONPATH:.
