@@ -2,7 +2,7 @@
 A modular, Virtual Spatial Lakehouse designed for municipal data analysis in the Research Triangle.
 
 ## System Architecture
-This repository implements a **Virtualized Spatial Lakehouse** model. Instead of traditional database ingestion, the engine uses **DuckDB Views** to point directly to standardized **GeoParquet** files. This ensures zero data redundancy, 100% portability, and native compatibility with external GIS tools like ArcGIS Pro.
+This repository implements a virtualized spatial lakehouse model. Instead of traditional database ingestion, the engine uses DuckDB views to point directly to standardized GeoParquet files. This ensures zero data redundancy, 100% portability, and native compatibility with external GIS tools like ArcGIS Pro.
 
 ## Repository Structure
 ```text
