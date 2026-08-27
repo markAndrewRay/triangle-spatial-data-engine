@@ -1,4 +1,4 @@
-# Triangle Spatial Decision Engine
+# Triangle Spatial Decision Pipeline
 A modular, Virtual Spatial Lakehouse designed for municipal data analysis in the Research Triangle.
 
 ## System Architecture
@@ -36,7 +36,7 @@ This repository implements a virtualized spatial lakehouse model. Instead of tra
 ## Getting Started
 
 ### Prerequisites
-This engine requires **Python 3.12+**. All core logic is tested against **DuckDB v1.1.0+** and the **DuckDB Spatial Extension**.
+This pipeline requires **Python 3.12+**. All core logic is tested against **DuckDB v1.1.0+** and the **DuckDB Spatial Extension**.
 
 ### Environment Setup 
 To ensure high-precision spatial operations and dependency isolation, this project uses a local virtual environment.
